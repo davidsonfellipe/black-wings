@@ -1,0 +1,163 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+
+  <meta charset="UTF-8">
+  <title>Black Wings</title>
+  <meta name="viewport" content="user-scalable=no,initial-scale=1.0">
+
+  <!-- Libs -->
+  <script src="js/lib/jquery.js"></script>
+  <script src="js/lib/easeljs.js"></script>
+
+  <!-- Game -->
+  <script src="js/game.js"></script>
+  <script src="js/plane.js"></script>
+  <script src="js/shoot.js"></script>
+
+  <!-- Style -->
+  <link rel="stylesheet" href="css/normalize.css">
+  <link rel="stylesheet" href="css/app.css">
+
+  <script>
+
+  $(function() {
+
+    var $screenStart = $("#screen-start"),
+        $screenPause = $("#screen-pause"),
+        $screenGameover = $("#screen-pontuacao");
+
+    document.ontouchstart = touchMouse;
+    document.ontouchmove = touchMove;
+    document.ontouchend = touchEnd;
+
+    function touchMouse (e) {
+
+      // $('.console').html('touchMouse');
+
+      if (e.target.id == "areaControl") {
+
+        onMove=true;
+
+        if (e.targetTouches) {
+          mouseObj.x=e.targetTouches[0].pageX;
+          mouseObj.y=e.targetTouches[0].pageY;
+        } else {
+          mouseObj.x=e.pageX;
+          mouseObj.y=e.pageY;
+        }
+
+        ckX=mouseObj.x;
+        ckY=mouseObj.y;
+      }
+
+      if (e.target.id == "screen-start") {
+        $screenStart.animate({
+            top: '-768px'
+        });
+        isPaused = false;
+      }
+
+      if (e.target.id == "bt-pause") {
+         if (!isPaused) {
+            isPaused = true;
+            $screenPause.fadeIn();
+        }
+      }
+
+      if (e.target.id == "screen-pause") {
+        isPaused = false;
+        $screenPause.fadeOut();
+      }
+
+      if (e.target.id == "screen-pontuacao") {
+        $screenGameover.fadeOut();
+        isPaused=false;
+      }
+
+
+
+      e.preventDefault();
+
+    };
+
+    function touchMove(e) {
+
+      // $('.console').html('touchMove');
+
+      if (e.targetTouches) {
+        mouseObj.x=e.targetTouches[0].pageX;
+        mouseObj.y=e.targetTouches[0].pageY;
+      } else {
+        mouseObj.x=e.pageX;
+        mouseObj.y=e.pageY;
+      }
+
+      if(onMove){
+        var px=mouseObj.x-ckX;//(1290-mouseObj.x-50)-defX;
+        var py=mouseObj.y-ckY;//(768-mouseObj.y-50)-defY;
+        // var angMove=Math.atan2((py),(px));
+        // var hip=Math.sqrt( (px)*(px) + (py)*(py) );
+        // if(hip>30)hip=30;
+        // px+=Math.cos(angMove)*hip;
+        // py+=Math.sin(angMove)*hip;
+
+        if (px > 60) px=60;
+        if (px < -60) px=-60;
+        if (py > 60) py=60;
+        if (py < -60) py=-60;
+
+        $("#areaControl").css('bottom',(-py+defY)+"px");
+        $("#areaControl").css('right',(-px+defX)+"px");
+        infX=(px)*0.03;
+        infY=(py)*0.03;
+
+        // $('.console').html(ckX + ' - touchMove - ' + ckY);
+
+      }
+
+
+
+    }
+
+    function touchEnd() {
+
+      // $('.console').html('touchEnd');
+
+      onMove=false;
+      infX=0;
+      infY=0;
+      $("#areaControl").css('bottom',defY+"px");
+      $("#areaControl").css( 'right',defX+"px");
+    }
+
+  });
+
+  </script>
+
+</head>
+<body class="stage">
+      <div class="console"></div>
+
+    <div id="screen-start" class="screen screen-start"></div>
+    <div id="screen-pause" class="screen screen-pause"></div>
+    <div id="screen-pontuacao" class="screen screen-pontuacao">
+      <p id="pontuacao"></p>
+    </div>
+
+    <!-- <div id="screen-game" class="screen screen-game">
+      game
+      <canvas id="game" width="1280" height="768"></canvas>
+    </div> -->
+
+    <div id="screen-game" style="width:1280px;height:768px;position:absolute;">
+      <div class="life-bar">
+        <div class="percent"></div>
+      </div>
+      <div id="areaControl" style="background:url(img/areaMove.png);width:200px;height:200px;position:absolute;bottom:100px;right:120px"></div>
+      <canvas id="game" width="1280" height="768"></canvas>
+      <a href="#" id="bt-pause"></a>
+    </div>
+
+</body>
+</html>

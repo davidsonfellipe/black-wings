@@ -1,0 +1,103 @@
+.stage {
+	width: 1280px;
+	height: 768px;
+	position: relative;
+	overflow: hidden;
+}
+.screen {
+	background-color: #dedede;
+	display: none;
+	height: 768px;
+	left: 0;
+	position: absolute;
+	top: 0;
+	width: 1280px;
+}
+.screen-start {
+	display: block;
+	z-index: 2;
+	background: url(../img/start.png) no-repeat;
+}
+.screen-pause {
+	z-index: 2;
+	background: url(../img/pause.png) no-repeat;
+}
+.screen-pontuacao {
+	z-index: 2;
+	background: url(../img/pontuacao.png) no-repeat;
+	display: none;
+}
+.screen-upgrade {
+	left: 1280px;
+	z-index: 2;
+}
+.screen-win {
+	left: -1280px;
+	z-index: 2;
+}
+.screen-gameover {
+	left: 1280px;
+	z-index: 2;
+}
+.screen-game {
+	z-index: 1;
+}
+
+/*console*/
+.console {
+	position: absolute;
+	top: 0;
+	right: 0;
+	width: 150px;
+	height: 100px;
+	background-color: #dedede;
+	display: none;
+}
+
+#bt-start {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	font-size: 32px;
+}
+
+#bt-pause {
+	position: absolute;
+	bottom: 120px;
+	left: 120px;
+	width: 130px;
+	height: 130px;
+	background: url(../img/bt-pause.png);
+	display: block;
+	opacity: .7;
+}
+
+.life-bar{
+  /*border: 1px solid #333;*/
+  width: 300px;
+  height: 50px;
+  top: 20px;
+  right: 20px;
+  position: absolute;
+}
+.life-bar .percent{
+  width: 100%;
+  height: 100%;
+  opacity: 0.8;
+  box-shadow: inset 0 -5px 2px rgba(0, 0, 0, 0, 0.5);
+  border-radius: 5px;
+  background: #006e2e; /* Old browsers */
+  background: -webkit-linear-gradient(left,  #006e2e 0%,#006e2e 100%); /* Chrome10+,Safari5.1+ */
+  background: linear-gradient(to right,  #006e2e 0%,#006e2e 100%); /* W3C */
+}
+.life-bar .percent.danger {
+  background: #a90329;
+  background: -webkit-linear-gradient(left,  #a90329 0%,#8f0222 44%,#6d0019 100%);
+  background: linear-gradient(to right,  #a90329 0%,#8f0222 44%,#6d0019 100%);
+}
+#pontuacao {
+	top: 200px;
+	left: 570px;
+	font-size: 150px;
+	position: absolute;
+}
