@@ -97,7 +97,9 @@
 }
 #pontuacao {
 	top: 200px;
-	left: 570px;
-	font-size: 150px;
+	left: 497px;
+	font-size: 130px;
 	position: absolute;
+	width: 294px;
+	text-align: center;
 }
