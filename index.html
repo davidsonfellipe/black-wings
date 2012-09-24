@@ -28,7 +28,9 @@
         $screenGameover = $("#screen-pontuacao");
 
     document.ontouchstart = touchMouse;
+    document.onclick = touchMouse;
     document.ontouchmove = touchMove;
+    document.onmousemove = touchMove;
     document.ontouchend = touchEnd;
 
     function touchMouse (e) {
