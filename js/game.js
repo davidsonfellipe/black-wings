@@ -8,78 +8,57 @@ var ckY=30;
 var imgW=1420;
 var imgH=1100;
 var score=0;
-var lifePercent=1;
-var baseplane = new Image();
-var baseplaneEnimy1 = new Image();
-var baseplaneEnimy2 = new Image();
-var baseplaneEnimy3 = new Image();
-var BackGround = new Image();
-var shootImg = new Image();
-var shootPlayerImg = new Image();
-var tecla=new Array();
+var images=new Array();
 var infX=0,infY=0;
 var spriteSheets=new Array();
 var world=new createjs.Container();
-//var spriteSheetBase,spriteSheetTopo,spriteSheetBaseEnimy,spriteSheetTopoEnimy;
 var things=new Array();
-var enimys=new Array();
+var enimies=new Array();
 var shots=new Array();
 var player;
 var imgsPraCarregar=0;
 var imgsCarregadas=0;
-var timeEnimy=100;
-var timee=0
+var timeSpawnEnimy=100;
+var timeCounter=0
 var mouseObj={x:0,y:0}
+var $screenStart,
+    $screenPause,
+    $screenGameover;
+
+document.ontouchstart = touchMouse;
+document.onmousedown = touchMouse;
+document.ontouchmove = touchMove;
+document.onmousemove = touchMove;
+document.ontouchend = touchEnd;
+document.onmouseup = touchEnd;
+
 //var t_d=68,t_a=65,t_w=67,t_s=64;
 window.onload=function() {
   canvas = document.getElementById("game");
   stage = new createjs.Stage(canvas);
-
-  carrega(BackGround,"img/bg.gif","BackGround",null);
-  carrega(shootImg,"img/shot.png","shoot",null);
-  carrega(shootPlayerImg,"img/shot-player.png","shoot-player",null);
-  carrega(baseplane,"img/plane.png","Base",{
-        images: [baseplane],
-        frames: {width: 150, height: 150, regX: 75, regY: 75},
-        animations:{
-            baseRotation: [0, 8, "baseRotation",3]
-        }
-    });
-  carrega(baseplaneEnimy1,"img/inimigo1.png",null);
-  carrega(baseplaneEnimy2,"img/inimigo2.png",null);
-  carrega(baseplaneEnimy3,"img/inimigo3.png",null);
-
-  // $("#areaControl").mousedown(function(e){
-  //     onMove=true;
-  //     ckX=mouseObj.x;
-  //     ckY=mouseObj.y;
-  //    });
-  // $(document).mouseup(function(e){
-  //     onMove=false;
-  //     infX=0;
-  //     infY=0;
-  //     $("#areaControl").css('bottom',defY+"px");
-  //     $("#areaControl").css( 'right',defX+"px");
-  //    });
+  $screenStart = $("#screen-start"),
+  $screenPause = $("#screen-pause"),
+  $screenGameover = $("#screen-pontuacao");
+  carrega("BackGround","img/bg.gif","BackGround");
+  carrega("shootImg","img/shot.png","shoot");
+  carrega("shootPlayerImg","img/shot-player.png","shoot-player");
+  carrega("baseplane","img/plane.png","Base");
+  carrega("baseplaneEnimy1","img/inimigo1.png");
+  carrega("baseplaneEnimy2","img/inimigo2.png");
+  carrega("baseplaneEnimy3","img/inimigo3.png");
 }
 
-function carrega(img,path,resul,dados){
+function carrega(img,path,resul){
   imgsPraCarregar++;
-  img.onload = function(){
-    if(dados){
-      spriteSheets[resul] = new createjs.SpriteSheet(dados);
-    }else{
-      //Back; = new createjs.Bitmap(dados);
-      //  BackGround=img;
-    }
+  images[img]= new Image();
+  images[img].onload = function(){
     imgsCarregadas++;
     if(imgsCarregadas==imgsPraCarregar){
-      var bg = new createjs.Bitmap(BackGround);
+      var bg = new createjs.Bitmap(images['BackGround']);
       world.addChild(bg)
       bg.x=0;
       bg.y=0;
       stage.addChild(world);
-      //world.x=500;
       player=new plane(500,500,true);
       things.push(player);
 
@@ -88,7 +67,7 @@ function carrega(img,path,resul,dados){
       createjs.Ticker.setFPS(30);
     }
   }
-  img.src=path;
+  images[img].src=path;
 }
 
 function tick() {
@@ -96,11 +75,11 @@ function tick() {
   for(var i=0;i<things.length;i++){
     things[i].enterFrame();
   }
-  timee++;
-  if(timee>timeEnimy){
-    timee=0;
+  timeCounter++;
+  if(timeCounter>timeSpawnEnimy){
+    timeCounter=0;
     var enimy=new plane(Math.floor(Math.random()*2)*imgH,Math.random()*1000,false);
-    enimys.push(enimy);
+    enimies.push(enimy);
     things.push(enimy);
   }
   world.x=((1280/2)-player.x);
@@ -110,26 +89,17 @@ function tick() {
   if (world.x > 0) world.x = 0;
   if (world.y > 0) world.y = 0;
   if (world.y +imgH < 768) world.y = 768-imgH;
-  lifePercent=player.life/100;
 
-  atualizaBarra(lifePercent);
+  atualizaBarra(player.life);
 
   stage.update();
 }
-function atualizaBarra(lifePercent) {
-  if (lifePercent <= 0.3) {
+function atualizaBarra(life) {
+  if ((life/100) <= 0.3) {
     $('.percent').addClass('danger');
   }
-  $('.percent').css('width', (lifePercent * 100) + "%");
+  $('.percent').css('width', ((life/100) * 100) + "%");
 }
-document.onkeydown = function(e){
-  //console.log(e.keyCode)
-  tecla[e.keyCode]=true;
-}
-document.onkeyup = function(e){
-  tecla[e.keyCode]=false;
-}
-
 function endGame(){
   $("#screen-pontuacao").show();
   $("#pontuacao").html(score);
@@ -140,28 +110,80 @@ function endGame(){
     things[i].base.x=9999999;
   }
   things = new Array();
-  enimys = new Array();
+  enimies = new Array();
   player = new plane(500,500,true);
   things.push(player);
-  timee=0;
+  timeCounter=0;
   isPause=true;
 }
 
-// $(document).mousemove(function(e){
-//       mouseObj.x=e.pageX;
-//       mouseObj.y=e.pageY;
+function touchMouse (e) {
+  if (e.target.id == "areaControl") {
+    onMove=true;
 
-//       if(onMove){
-//         var px=mouseObj.x-ckX;//(1290-mouseObj.x-50)-defX;
-//         var py=mouseObj.y-ckY;//(768-mouseObj.y-50)-defY;
-//         var angMove=Math.atan2((py),(px));
-//         var hip=Math.sqrt( (px)*(px) + (py)*(py) );
-//         if(hip>30)hip=30;
-//         px+=Math.cos(angMove)*hip;
-//         py+=Math.sin(angMove)*hip;
-//         $("#areaControl").css('bottom',(-py-defY+55)+"px");
-//         $("#areaControl").css('right',(-px-defX+55)+"px");
-//         infX=(px)*0.05;
-//         infY=(py)*0.05;
-//       }
-//    });
+    if (e.targetTouches) {
+      mouseObj.x=e.targetTouches[0].pageX;
+      mouseObj.y=e.targetTouches[0].pageY;
+    } else {
+      mouseObj.x=e.pageX;
+      mouseObj.y=e.pageY;
+    }
+
+    ckX=mouseObj.x;
+    ckY=mouseObj.y;
+  }
+
+  switch(e.target.id){
+    case "screen-start":
+      $screenStart.animate({top: '-768px'});
+      isPaused = false;
+      break;
+    case "bt-pause":
+      if (!isPaused) {
+        isPaused = true;
+        $screenPause.fadeIn();
+      }
+      break;
+    case "screen-pause":
+      isPaused = false;
+      $screenPause.fadeOut();
+      break;
+    case "screen-pontuacao":
+      $screenGameover.fadeOut();
+      isPaused=false;
+      break;
+  }
+  e.preventDefault();
+};
+
+function touchMove(e) {
+  if (e.targetTouches) {
+    mouseObj.x=e.targetTouches[0].pageX;
+    mouseObj.y=e.targetTouches[0].pageY;
+  } else {
+    mouseObj.x=e.pageX;
+    mouseObj.y=e.pageY;
+  }
+
+  if(onMove){
+    var px=mouseObj.x-ckX;
+    var py=mouseObj.y-ckY;
+    if (px > 60) px=60;
+    if (px < -60) px=-60;
+    if (py > 60) py=60;
+    if (py < -60) py=-60;
+
+    $("#areaControl").css('bottom',(-py+defY)+"px");
+    $("#areaControl").css('right',(-px+defX)+"px");
+    infX=(px)*0.03;
+    infY=(py)*0.03;
+  }
+}
+
+function touchEnd() {
+  onMove=false;
+  infX=0;
+  infY=0;
+  $("#areaControl").css('bottom',defY+"px");
+  $("#areaControl").css( 'right',defX+"px");
+}

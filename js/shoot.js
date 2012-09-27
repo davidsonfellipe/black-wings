@@ -1,15 +1,12 @@
 function shoot(nx,ny,pl,ang,v,d){
-
   if (pl) {
-    this.base = new createjs.Bitmap(shootImg);
+    this.base = new createjs.Bitmap(images['shootImg']);
   } else {
-    this.base = new createjs.Bitmap(shootPlayerImg);
+    this.base = new createjs.Bitmap(images['shootPlayerImg']);
   }
-
   this.x=nx;
   this.y=ny;
   this.damage=d;
-  this.active=true
   this.vx=Math.cos(ang)*v;
   this.vy=Math.sin(ang)*v;
   this.player=pl;
@@ -17,47 +14,47 @@ function shoot(nx,ny,pl,ang,v,d){
   world.addChild(this.base);
 
   this.enterFrame=function(){
-    if(!this.active)return
     if(this.player){
-      for (var i = enimys.length - 1; i >= 0; i--) {
-        if(enimys[i].active){
-          var mx=enimys[i].x
-          var my=enimys[i].y
-          var hipp=Math.sqrt( (mx-this.x)*(mx-this.x) + (my-this.y)*(my-this.y) );
-          if(hipp<enimys[i].radius){
-      this.active=false;
-        this.x=-9999;
-        this.y=-9999;
-        this.base.x=this.x;
-        this.base.y=this.y;
-        enimys[i].damage(this.damage);
+      for (var i = enimies.length - 1; i >= 0; i--) {
+          var mx=enimies[i].x
+          var my=enimies[i].y
+          var distance=Math.sqrt( (mx-this.x)*(mx-this.x) + (my-this.y)*(my-this.y) );
+          if(distance<enimies[i].radius){
+            enimies[i].damage(this.damage);
+            this.remove();
+            return;
           }
-        }
+        
       }
     }else{
-    var mx=player.x
-    var my=player.y
-    var hipp=Math.sqrt( (mx-this.x)*(mx-this.x) + (my-this.y)*(my-this.y) );
-    if(hipp<player.radius){
-      this.active=false;
-        this.x=-9999;
-        this.y=-9999;
-        this.base.x=this.x;
-        this.base.y=this.y;
+      var mx=player.x
+      var my=player.y
+      var distance=Math.sqrt( (mx-this.x)*(mx-this.x) + (my-this.y)*(my-this.y) );
+      if(distance<player.radius){
         player.damage(this.damage);
-    }
+        this.remove();
+        return;
+      }
     }
 
     this.x += this.vx;
     this.y += this.vy;
 
     if ((this.x < 0)||(this.x > imgW)||(this.y < 0)||(this.y > imgH)){
-      this.active=false;
-      this.x=-9999;
-      this.y=-9999;
+      this.remove();
+      return;
     }
 
     this.base.x=this.x;
     this.base.y=this.y;
+  }
+  this.remove=function(){
+    this.base.x=-9999;
+    this.base.y=-9999;
+    for (var i=0;i<things.length;i++) {
+      if(things[i]==this){
+        things.splice(i,1);
+      }
+    }
   }
 }
