@@ -14,7 +14,7 @@ function plane(xx,yy,p){
     this.target = mouseObj;
     this.vel = 4;
     this.range = 50;
-    this.life=100;
+    this.life=playerMaxLife;
     this.fireRate=15;
   }else{
     switch(Math.floor(Math.random()*3)){
@@ -111,6 +111,13 @@ function plane(xx,yy,p){
         endGame();
       }else{
         score+=10;
+        var n=Math.random()*5+8;
+        for(var l=0;l<n;l++){
+          new gold(this.x,this.y,10);
+        }
+        if(Math.random()<0.3){
+          new heal(this.x,this.y,15);
+        }
       }
       this.remove();
       return;

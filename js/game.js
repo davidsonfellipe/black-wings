@@ -16,14 +16,17 @@ var things=new Array();
 var enimies=new Array();
 var shots=new Array();
 var player;
+var playerMaxLife=100;
 var imgsPraCarregar=0;
 var imgsCarregadas=0;
 var timeSpawnEnimy=100;
 var timeCounter=0
+var goldAmount=0;
 var mouseObj={x:0,y:0}
 var $screenStart,
     $screenPause,
-    $screenGameover;
+    $screenGameover,
+    $screenUpgrades;
 
 document.ontouchstart = touchMouse;
 document.onmousedown = touchMouse;
@@ -39,8 +42,11 @@ window.onload=function() {
   $screenStart = $("#screen-start"),
   $screenPause = $("#screen-pause"),
   $screenGameover = $("#screen-pontuacao");
+  $screenUpgrades = $("#screen-upgrades");
   carrega("BackGround","img/bg.gif","BackGround");
   carrega("shootImg","img/shot.png","shoot");
+  carrega("goldImg","img/gold.png","gold");
+  carrega("healImg","img/heal.png","heal");
   carrega("shootPlayerImg","img/shot-player.png","shoot-player");
   carrega("baseplane","img/plane.png","Base");
   carrega("baseplaneEnimy1","img/inimigo1.png");
@@ -90,6 +96,7 @@ function tick() {
   if (world.y > 0) world.y = 0;
   if (world.y +imgH < 768) world.y = 768-imgH;
 
+  $('#goldDisplay').html(goldAmount);
   atualizaBarra(player.life);
 
   stage.update();
@@ -114,6 +121,7 @@ function endGame(){
   player = new plane(500,500,true);
   things.push(player);
   timeCounter=0;
+  goldAmount=0;
   isPause=true;
 }
 
@@ -151,6 +159,14 @@ function touchMouse (e) {
     case "screen-pontuacao":
       $screenGameover.fadeOut();
       isPaused=false;
+      break;
+    case "screen-upgrades":
+      $screenUpgrades.animate({left: '-1280px'});
+      isPaused=false;
+      break;
+    case "btUpgrades":
+      $screenUpgrades.animate({left: '0px'});
+      isPaused=true;
       break;
   }
   e.preventDefault();
