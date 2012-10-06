@@ -16,15 +16,14 @@ function shoot(nx,ny,pl,ang,v,d){
   this.enterFrame=function(){
     if(this.player){
       for (var i = enimies.length - 1; i >= 0; i--) {
-          var mx=enimies[i].x
-          var my=enimies[i].y
-          var distance=Math.sqrt( (mx-this.x)*(mx-this.x) + (my-this.y)*(my-this.y) );
-          if(distance<enimies[i].radius){
-            enimies[i].damage(this.damage);
-            this.remove();
-            return;
-          }
-        
+        var mx=enimies[i].x
+        var my=enimies[i].y
+        var distance=Math.sqrt( (mx-this.x)*(mx-this.x) + (my-this.y)*(my-this.y) );
+        if(distance<enimies[i].radius){
+          enimies[i].damage(this.damage);
+          this.remove();
+          return;
+        }
       }
     }else{
       var mx=player.x

@@ -40,13 +40,15 @@ function plane(xx,yy,p){
   this.enterFrame=function(){
     this.time++;
     if(this.player){
+      this.fireRate=25*Math.pow(0.85,upgrades['fireRate'])
       var angleMove=Math.atan2((infY),(infX));
       var hip=Math.sqrt( (infX)*(infX) + (infY)*(infY) );
-      this.vx+=Math.cos(angleMove)*hip;
-      this.vy+=Math.sin(angleMove)*hip;
+      var mvScale=0.55*Math.pow(1.2,upgrades['moveSpeed']);
+      this.vx+=Math.cos(angleMove)*hip*mvScale;
+      this.vy+=Math.sin(angleMove)*hip*mvScale;
       var enimy=enimies[0];
       var minEnimyDistance=99999999;
-      for (var i = enimies.length - 1; i >= 1; i--) {
+      for (var i = enimies.length - 1; i >= 0; i--) {
         var mx=enimies[i].x;
         var my=enimies[i].y;
         var distance=Math.sqrt( (mx-this.x)*(mx-this.x) + (my-this.y)*(my-this.y) );
@@ -58,7 +60,12 @@ function plane(xx,yy,p){
       if(this.time>this.fireRate && enimy){
         this.time=0;
         var angleShoot=Math.atan2((enimy.y-this.y),(enimy.x-this.x));
-        new shoot(this.x,this.y,true,angleShoot,14,10);
+        var sinAng=Math.sin(angleShoot);
+        var cosAng=Math.cos(angleShoot);
+        for(var k=0;k<upgrades['shootNumber']+1;k++){
+          var nnn=((upgrades['shootNumber']/-2)+k)*5;
+          new shoot(this.x+sinAng*nnn,this.y-cosAng*nnn,true,angleShoot-nnn*0.02,20,Math.pow(1.3,upgrades['shootPower'])*10);
+        }
       }
     }else{
       var mx=this.target.x;
@@ -86,7 +93,8 @@ function plane(xx,yy,p){
       ang+=Math.PI*(1.5+0.125);
       if(ang<0)ang+=(Math.PI*2);
       var frame=Math.floor((ang/(Math.PI*2))*8);
-      if(frame==8)frame=0;
+     // console.log(ang+" "+frame);
+      if(frame>=8)frame-=8;
       this.base.gotoAndStop(frame);
     }
     this.x += this.vx;
@@ -105,13 +113,17 @@ function plane(xx,yy,p){
     }
   }
   this.damage=function(v){
-    this.life-=v;
+    if(this.player){
+      this.life-=v*Math.pow(0.8,upgrades['resistence']);
+    }else{
+      this.life-=v;
+    }
     if(this.life<0){
       if(this.player){
         endGame();
       }else{
         score+=10;
-        var n=Math.random()*5+8;
+        var n=(Math.random()+0.7)*(upgrades['loot']+4)*1.5;
         for(var l=0;l<n;l++){
           new gold(this.x,this.y,10);
         }

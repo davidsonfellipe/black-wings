@@ -2,9 +2,10 @@ function gold(nx,ny,v){
   this.base = new createjs.Bitmap(images['goldImg']);
   this.x=nx;
   this.y=ny;
+  this.time=500;
   this.value=v;
   var ang=Math.random()*360;
-  var vel=Math.random()*8;
+  var vel=Math.random()*9;
   this.vx=Math.cos(ang)*vel;
   this.vy=Math.sin(ang)*vel;
   things.push(this)
@@ -27,7 +28,7 @@ function gold(nx,ny,v){
     var mx=player.x
     var my=player.y
     var distance=Math.sqrt( (mx-this.x)*(mx-this.x) + (my-this.y)*(my-this.y) );
-    if(distance<180){
+    if(distance<(100+upgrades['magnet']*10)){
       var angPlayer=Math.atan2((my-this.y),(mx-this.x));
       this.vx+=Math.cos(angPlayer)*1;
       this.vy+=Math.sin(angPlayer)*1;
@@ -40,6 +41,8 @@ function gold(nx,ny,v){
 
     this.base.x=this.x;
     this.base.y=this.y;
+    this.time--;
+    if( this.time<0 )this.remove();
   }
   this.remove=function(){
     this.base.x=-9999;

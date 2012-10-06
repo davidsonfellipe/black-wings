@@ -1,3 +1,11 @@
+*{
+	-webkit-touch-callout: none;
+	-webkit-user-select: none;
+	-khtml-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+}
 .stage {
 	width: 1280px;
 	height: 768px;
@@ -113,14 +121,28 @@
 	bottom:100px;
 	right:120px;
 }
-#goldDisplay{
+#areaControlX{
+	background:url(../img/areaMove.png);
+	width:200px;
+	height:200px;
+	position:absolute;
+	bottom:100px;
+	right:120px;
+}
+.goldDisplay{
 	font-weight: bold;
 	text-shadow: black 5px 5px;
 	position: absolute;
 	top: 10px;
-	left: 20px;
+	left: 70px;
 	font-size: 50pt;
 	color: #FC0;
+}
+.miniGold{
+	left: 20px;
+	top: 25px;
+	position: absolute;
+	height: 50px;
 }
 #btUpgrades{
 	text-align: center;
@@ -133,4 +155,54 @@
 	font-size: 20pt;
 	width: 180px;
 	height: 40px;
+}
+#title-upgrade{
+	position: absolute;
+	top:30px;
+	font-size: 50pt;
+	width: 100%;
+	text-align: center;
+}
+#upgrade-containner{
+	width: 1000px;
+	left:50%;
+	margin-left: -500px; 
+	top:110px;
+	position: absolute;
+}
+.upgrade-group{
+	width: 100%;
+	height: 70px;
+	background: #EEE;
+	left:50%;
+	cursor: pointer;
+	margin-bottom: 5px;
+	border:2px solid #555;
+}
+.name-upgrade{
+	float: left;
+	display: block;
+	font-size: 30pt;
+	margin: 12px 20px;
+}
+.cost-upgrade{
+	float: right;
+	display: block;
+	font-size: 35pt;
+	margin: 7px 20px;
+}
+.upgrade-group div{
+	left: 280px;
+	position: absolute;
+	margin: 10px;
+}
+.upgrade-group div img{
+	margin:0 3px; 
+}
+#btVoltar{
+	font-size: 35pt;
+	background: #aaa;
+	position: absolute;
+	bottom: 30px;
+	left: 30px;
 }

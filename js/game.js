@@ -15,6 +15,24 @@ var world=new createjs.Container();
 var things=new Array();
 var enimies=new Array();
 var shots=new Array();
+var upgrades={
+    resistence:0,
+    shootNumber:0,
+    shootPower:0,
+    fireRate:0,
+    moveSpeed:0,
+    loot:0,
+    magnet:0
+  };
+var upgradesProg={
+    resistence:{base:100,mult:2},
+    shootNumber:{base:100,mult:2},
+    shootPower:{base:100,mult:2},
+    fireRate:{base:100,mult:2},
+    moveSpeed:{base:100,mult:2},
+    loot:{base:100,mult:2},
+    magnet:{base:100,mult:2}
+  };
 var player;
 var playerMaxLife=100;
 var imgsPraCarregar=0;
@@ -96,7 +114,7 @@ function tick() {
   if (world.y > 0) world.y = 0;
   if (world.y +imgH < 768) world.y = 768-imgH;
 
-  $('#goldDisplay').html(goldAmount);
+  $('.goldDisplay').html(goldAmount);
   atualizaBarra(player.life);
 
   stage.update();
@@ -122,9 +140,31 @@ function endGame(){
   things.push(player);
   timeCounter=0;
   goldAmount=0;
-  isPause=true;
+  isPaused=true;
 }
-
+function updateUpgrades(){
+  $('.goldDisplay').html(goldAmount);
+  for(var upg in upgrades){
+    var html='';
+    for(var i=0;i<6;i++){
+      if(i<upgrades[upg]){
+        html+='<img src="img/upgD.png" />';
+      }else{
+        html+='<img src="img/upg.png" />';
+      }
+    }
+    $('#upg-'+upg+' div').html(html);
+    if(upgrades[upg]<6){
+      $('#upg-'+upg+' .cost-upgrade').html('$'+calcUpgrade(upg));
+    }else{
+      $('#upg-'+upg+' .cost-upgrade').html('MAX');
+    }
+  }
+}
+function calcUpgrade (n) {
+  var val=upgradesProg[n].base*Math.pow(upgradesProg[n].mult,upgrades[n]);
+  return Math.floor(val);
+}
 function touchMouse (e) {
   if (e.target.id == "areaControl") {
     onMove=true;
@@ -140,7 +180,6 @@ function touchMouse (e) {
     ckX=mouseObj.x;
     ckY=mouseObj.y;
   }
-
   switch(e.target.id){
     case "screen-start":
       $screenStart.animate({top: '-768px'});
@@ -160,13 +199,34 @@ function touchMouse (e) {
       $screenGameover.fadeOut();
       isPaused=false;
       break;
-    case "screen-upgrades":
+    case "btVoltar":
       $screenUpgrades.animate({left: '-1280px'});
       isPaused=false;
       break;
     case "btUpgrades":
+      updateUpgrades()
       $screenUpgrades.animate({left: '0px'});
       isPaused=true;
+      break;
+    default:
+      var upgName='';
+      var target=e.target;
+      while(target){
+        if(target.id){
+          if(target.id.split('-')[0]=='upg'){
+            upgName=target.id.split('-')[1];
+            break;
+          }
+        }
+        target=target.parentNode;
+      }
+      if(upgName!=''){
+        if(goldAmount>=calcUpgrade(upgName) && upgrades[upgName]<6){
+          goldAmount-=calcUpgrade(upgName);
+          upgrades[upgName]++;
+          updateUpgrades();
+        }
+      }
       break;
   }
   e.preventDefault();
@@ -184,10 +244,10 @@ function touchMove(e) {
   if(onMove){
     var px=mouseObj.x-ckX;
     var py=mouseObj.y-ckY;
-    if (px > 60) px=60;
-    if (px < -60) px=-60;
-    if (py > 60) py=60;
-    if (py < -60) py=-60;
+    if (px > 70) px=70;
+    if (px < -70) px=-70;
+    if (py > 70) py=70;
+    if (py < -70) py=-70;
 
     $("#areaControl").css('bottom',(-py+defY)+"px");
     $("#areaControl").css('right',(-px+defX)+"px");
