@@ -15,6 +15,8 @@ var world=new createjs.Container();
 var things=new Array();
 var enimies=new Array();
 var shots=new Array();
+var wave=1;
+var waveDuration=500;
 var upgrades={
     resistence:0,
     shootNumber:0,
@@ -26,7 +28,7 @@ var upgrades={
   };
 var upgradesProg={
     resistence:{base:100,mult:2},
-    shootNumber:{base:100,mult:2},
+    shootNumber:{base:200,mult:2},
     shootPower:{base:100,mult:2},
     fireRate:{base:100,mult:2},
     moveSpeed:{base:100,mult:2},
@@ -37,7 +39,7 @@ var player;
 var playerMaxLife=100;
 var imgsPraCarregar=0;
 var imgsCarregadas=0;
-var timeSpawnEnimy=100;
+var timeSpawnEnimy;
 var timeCounter=0
 var goldAmount=0;
 var mouseObj={x:0,y:0}
@@ -70,6 +72,7 @@ window.onload=function() {
   carrega("baseplaneEnimy1","img/inimigo1.png");
   carrega("baseplaneEnimy2","img/inimigo2.png");
   carrega("baseplaneEnimy3","img/inimigo3.png");
+  carrega("baseplaneBoss1","img/boss1.png");
 }
 
 function carrega(img,path,resul){
@@ -83,8 +86,9 @@ function carrega(img,path,resul){
       bg.x=0;
       bg.y=0;
       stage.addChild(world);
-      player=new plane(500,500,true);
-      things.push(player);
+      /*player=new plane(500,500,true,false);
+      things.push(player);*/
+      newGame();
 
       createjs.Ticker.addListener(window);
       createjs.Ticker.useRAF = true;
@@ -99,10 +103,17 @@ function tick() {
   for(var i=0;i<things.length;i++){
     things[i].enterFrame();
   }
-  timeCounter++;
-  if(timeCounter>timeSpawnEnimy){
-    timeCounter=0;
-    var enimy=new plane(Math.floor(Math.random()*2)*imgH,Math.random()*1000,false);
+  timeSpawnEnimy=Math.floor(Math.pow(0.75,wave)*130);
+  if(timeCounter<waveDuration){
+    timeCounter++;
+  }else if(timeCounter==waveDuration){
+    creatBoss();
+    timeCounter++;
+  }else{
+  }
+  if(timeCounter%timeSpawnEnimy==1){
+   // timeCounter=0;
+    var enimy=new plane(Math.floor(Math.random()*2)*imgH,Math.random()*1000,false,false);
     enimies.push(enimy);
     things.push(enimy);
   }
@@ -119,28 +130,50 @@ function tick() {
 
   stage.update();
 }
-function atualizaBarra(life) {
-  if ((life/100) <= 0.3) {
-    $('.percent').addClass('danger');
-  }
-  $('.percent').css('width', ((life/100) * 100) + "%");
+function creatBoss(){
+  var enimy=new plane(Math.floor(Math.random()*2)*imgH,Math.random()*1000,false,true);
+  enimies.push(enimy);
+  things.push(enimy);
+}
+function nextWave(){
+  wave++;
+  timeCounter=0;
 }
 function endGame(){
   $("#screen-pontuacao").show();
   $("#pontuacao").html(score);
-  $('.percent').removeClass('danger');
-  score = 0;
   for (var i=0;i<things.length;i++) {
     things[i].active=false;
     things[i].base.x=9999999;
   }
+  newGame()
+}
+function newGame(){
+  score = 0;
   things = new Array();
   enimies = new Array();
-  player = new plane(500,500,true);
+  player = new plane(500,500,true,false);
   things.push(player);
   timeCounter=0;
-  goldAmount=0;
+  goldAmount=10000;
   isPaused=true;
+  var upgrades={
+    resistence:0,
+    shootNumber:0,
+    shootPower:0,
+    fireRate:0,
+    moveSpeed:0,
+    loot:0,
+    magnet:0
+  };
+}
+function atualizaBarra(life) {
+  if ((life/100) <= 0.3) {
+    $('.percent').addClass('danger');
+  }else{
+    $('.percent').removeClass('danger');
+  }
+  $('.percent').css('width', ((life/100) * 100) + "%");
 }
 function updateUpgrades(){
   $('.goldDisplay').html(goldAmount);
@@ -244,10 +277,10 @@ function touchMove(e) {
   if(onMove){
     var px=mouseObj.x-ckX;
     var py=mouseObj.y-ckY;
-    if (px > 70) px=70;
-    if (px < -70) px=-70;
-    if (py > 70) py=70;
-    if (py < -70) py=-70;
+    if (px > 80) px=80;
+    if (px < -80) px=-80;
+    if (py > 80) py=80;
+    if (py < -80) py=-80;
 
     $("#areaControl").css('bottom',(-py+defY)+"px");
     $("#areaControl").css('right',(-px+defX)+"px");

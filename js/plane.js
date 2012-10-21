@@ -1,6 +1,7 @@
 
-function plane(xx,yy,p){
-  this.player=p
+function plane(xx,yy,p,boss){
+  this.player=p;
+  this.boss=boss;
   if(this.player){
     var spriteSheet = new createjs.SpriteSheet({
         images: [images['baseplane']],
@@ -16,27 +17,40 @@ function plane(xx,yy,p){
     this.range = 50;
     this.life=playerMaxLife;
     this.fireRate=15;
+    this.radius=60;
   }else{
-    switch(Math.floor(Math.random()*3)){
-      case 0:this.base = new createjs.Bitmap(images['baseplaneEnimy1']);break;
-      case 1:this.base = new createjs.Bitmap(images['baseplaneEnimy2']);break;
-      case 2:this.base = new createjs.Bitmap(images['baseplaneEnimy3']);break;
-    }
-
     this.target = player;
-    this.vel = 2;
-    this.life=50;
-    this.range = 450;
-    this.fireRate=15;
+    if(!this.boss){
+      switch(Math.floor(Math.random()*3)){
+        case 0:this.base = new createjs.Bitmap(images['baseplaneEnimy1']);break;
+        case 1:this.base = new createjs.Bitmap(images['baseplaneEnimy2']);break;
+        case 2:this.base = new createjs.Bitmap(images['baseplaneEnimy3']);break;
+      }
+      this.vel = 1.3;
+      this.life=50;
+      this.range = 450;
+      this.fireRate=30;
+      this.radius=60;
+      this.shootNumber=0;
+    }else{
+      this.base = new createjs.Bitmap(images['baseplaneBoss1']);
+      this.vel = 1.0;
+      this.life = 350;
+      this.range = 550;
+      this.fireRate=12;
+      this.radius=120;
+      this.shootNumber=wave;
+    }
+    this.life*=Math.pow(1.3,wave);
+    this.fireRate*=Math.pow(0.9,wave);
   }
-  this.time=0
+  this.time=0;
   this.x=xx;
   this.y=yy;
   this.vx=0;
   this.vy=0;
-  this.radius=60;
   world.addChild(this.base);
-
+  this.base.x=99999;
   this.enterFrame=function(){
     this.time++;
     if(this.player){
@@ -82,7 +96,13 @@ function plane(xx,yy,p){
       }else{
         if(this.time>this.fireRate){
           this.time=0;
-          new shoot(this.x,this.y,false,angleMove,14,5);
+          var sinAng=Math.sin(angleMove);
+          var cosAng=Math.cos(angleMove);
+          for(var k=0;k<this.shootNumber+1;k++){
+            var nnn=((this.shootNumber/-2)+k)*5;
+            //new shoot(this.x+sinAng*nnn,this.y-cosAng*nnn,true,angleShoot-nnn*0.02,20,Math.pow(1.3,upgrades['shootPower'])*10);
+            new shoot(this.x+sinAng*nnn,this.y-cosAng*nnn,false,angleMove+Math.random()*0.1-nnn*0.02,14,5);
+          }          
         }
       }
     }
@@ -107,6 +127,9 @@ function plane(xx,yy,p){
     if(this.player){
       this.base.x=this.x;
       this.base.y=this.y;
+    }else if(this.boss){
+      this.base.x=this.x-150;
+      this.base.y=this.y-150;
     }else{
       this.base.x=this.x-75;
       this.base.y=this.y-75;
@@ -123,12 +146,21 @@ function plane(xx,yy,p){
         endGame();
       }else{
         score+=10;
-        var n=(Math.random()+0.7)*(upgrades['loot']+4)*1.5;
-        for(var l=0;l<n;l++){
-          new gold(this.x,this.y,10);
-        }
-        if(Math.random()<0.3){
+        if(this.boss){
+          var n=(5)*(upgrades['loot']+4);
+          for(var l=0;l<n;l++){
+            new gold(this.x,this.y,10);
+          }
           new heal(this.x,this.y,15);
+          nextWave();
+        }else{
+          var n=(Math.random()+0.7)*(upgrades['loot']+4);
+          for(var l=0;l<n;l++){
+            new gold(this.x,this.y,10);
+          }
+          if(Math.random()<0.25){
+            new heal(this.x,this.y,15);
+          }
         }
       }
       this.remove();
